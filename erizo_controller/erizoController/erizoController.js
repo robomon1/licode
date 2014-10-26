@@ -144,6 +144,7 @@ var sendMsgToRoom = function (room, type, arg) {
 
 var privateRegexp;
 var publicIP;
+var hostName;
 
 var addToCloudHandler = function (callback) {
     "use strict";
@@ -174,8 +175,10 @@ var addToCloudHandler = function (callback) {
 
     if (GLOBAL.config.erizoController.publicIP === '' || GLOBAL.config.erizoController.publicIP === undefined){
         publicIP = addresses[0];
+        hostName = GLOBAL.config.erizoController.hostname;
     } else {
         publicIP = GLOBAL.config.erizoController.publicIP;
+        hostName = GLOBAL.config.erizoController.publicIP;
     }
 
     var addECToCloudHandler = function(attempt) {
@@ -186,7 +189,7 @@ var addToCloudHandler = function (callback) {
         var controller = {
             cloudProvider: GLOBAL.config.cloudProvider.name,
             ip: publicIP,
-            hostname: GLOBAL.config.erizoController.hostname,
+            hostname: hostName,
             port: GLOBAL.config.erizoController.port,
             ssl: GLOBAL.config.erizoController.ssl
         };

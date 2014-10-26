@@ -94,11 +94,13 @@ exports.addNewErizoController = function (msg, callback) {
     
 };
 
-var addNewAmazonErizoController = function(privateIP, callback) {
+var addNewAmazonErizoController = function(privateIP, hostname, port, ssl, callback) {
     
     var publicIP;
     var instaceId;
 
+    log.info('hostname ', hostname);
+    log.info('privateIP ', privateIP);
     if (ec2 === undefined) {
         var opt = {version: '2012-12-01'};
         if (config.cloudProvider.host !== '') {
@@ -108,17 +110,21 @@ var addNewAmazonErizoController = function(privateIP, callback) {
     }
     log.info('private ip ', privateIP);
 
-    ec2.call('DescribeInstances', {'Filter.1.Name':'private-ip-address', 'Filter.1.Value':privateIP}, function (err, response) {
+    if (privateIP === hostname) {
+        addNewPrivateErizoController(privateIP, hostname, port, ssl, callback);
+    } else {
+        ec2.call('DescribeInstances', {'Filter.1.Name':'private-ip-address', 'Filter.1.Value':privateIP}, function (err, response) {
 
-        if (err) {
-            log.info('Error: ', err);
-            callback('error');
-        } else if (response) {
-            publicIP = response.reservationSet.item.instancesSet.item.ipAddress;
-            log.info('public IP: ', publicIP);
-            addNewPrivateErizoController(publicIP, hostname, port, ssl, callback);
-        }
-    });
+            if (err) {
+                log.info('Error: ', err);
+                callback('error');
+            } else if (response) {
+                publicIP = response.reservationSet.item.instancesSet.item.ipAddress;
+                log.info('public IP: ', publicIP);
+                addNewPrivateErizoController(publicIP, hostname, port, ssl, callback);
+            }
+        });
+    }
 }
 
 var addNewPrivateErizoController = function (ip, hostname, port, ssl, callback) {
