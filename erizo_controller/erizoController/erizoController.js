@@ -794,7 +794,15 @@ exports.deleteRoom = function (room, callback) {
 
     for (id in sockets) {
         if (sockets.hasOwnProperty(id)) {
-            rooms[room].roomController.removeSubscriptions(sockets[id]);
+            if (rooms[room] === undefined) {
+                log.info('rooms[room] is undefined ', room, rooms);
+            } else {
+                if (rooms[room].roomController === undefined) {
+                    log.info('rooms[room].roomController is undefined ', room, rooms);
+                } else {
+                    rooms[room].roomController.removeSubscriptions(sockets[id]);
+                }
+            }
         }
     }
 
